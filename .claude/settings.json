@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(git -C /Users/zeke/git-projects/design-token-manager ls-files)",
-      "WebFetch(domain:code.visualstudio.com)"
+      "WebFetch(domain:code.visualstudio.com)",
+      "Bash(open /Users/zeke/git-projects/design-token-manager/design/phase-1/custom-editor-layout.html)"
     ]
   }
 }

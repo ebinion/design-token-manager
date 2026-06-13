@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<!--
+  Phase 1 mock #1 — "Custom editor layout + the 5 primitive type editors"
+  (design/phase-1/README.md, suggested mocking order item 1; FR-2.2, §4)
+
+  STATIC VISUAL DESIGN ONLY — no functionality. Inputs/selects are stylistic.
+
+  Adheres to design/README.md (Visual Design Guidelines):
+    - Every UI color is a var(--vscode-*) token. Fallback hex values are the
+      real VS Code Dark+ / Light+ theme values, present only so the file renders
+      standalone in a browser (per the guidelines' note for non-CSS agents).
+    - Monospace (--vscode-editor-font-family) for token names + values; UI font
+      for labels. Dense, Figma-Variables-style two-column rows. Flat & quiet.
+    - Theme-adaptive: toggle Dark / Light / High-contrast — no per-theme art,
+      only the variable block swaps. (Item #6 preview; proves hard rule #3.)
+-->
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>couplefi.tokens.json — Design Token Manager (mock)</title>
+<style>
+  /* ============================================================= *
+   *  VS CODE THEME VARIABLES                                       *
+   *  Fallbacks = real Dark+ values so this renders without a host. *
+   * ============================================================= */
+  :root,
+  [data-theme="dark"] {
+    --vscode-editor-background: #1e1e1e;
+    --vscode-sideBar-background: #252526;
+    --vscode-titleBar-background: #3c3c3c;
+    --vscode-tab-activeBackground: #1e1e1e;
+    --vscode-tab-inactiveBackground: #2d2d2d;
+    --vscode-foreground: #cccccc;
+    --vscode-editor-foreground: #d4d4d4;
+    --vscode-descriptionForeground: #9d9d9d;
+    --vscode-panel-border: #2b2b2b;
+    --vscode-widget-border: #ffffff14;
+    --vscode-input-background: #313131;
+    --vscode-input-foreground: #cccccc;
+    --vscode-input-border: #3c3c3c;
+    --vscode-input-placeholderForeground: #989898;
+    --vscode-dropdown-background: #313131;
+    --vscode-dropdown-border: #3c3c3c;
+    --vscode-button-background: #0e639c;
+    --vscode-button-foreground: #ffffff;
+    --vscode-button-hoverBackground: #1177bb;
+    --vscode-button-secondaryBackground: #313131;
+    --vscode-button-secondaryForeground: #cccccc;
+    --vscode-list-hoverBackground: #2a2d2e;
+    --vscode-list-activeSelectionBackground: #04395e;
+    --vscode-list-activeSelectionForeground: #ffffff;
+    --vscode-list-inactiveSelectionBackground: #37373d;
+    --vscode-focusBorder: #007fd4;
+    --vscode-textLink-foreground: #4daafc;
+    --vscode-errorForeground: #f14c4c;
+    --vscode-inputValidation-errorBorder: #be1100;
+    --vscode-badge-background: #4d4d4d;
+    --vscode-badge-foreground: #ffffff;
+    --vscode-icon-foreground: #c5c5c5;
+    --vscode-statusBar-background: #007acc;
+    --vscode-statusBar-foreground: #ffffff;
+    --vscode-scrollbarSlider-background: #79797966;
+    --checker-a: #2a2a2a;
+    --checker-b: #1c1c1c;
+    color-scheme: dark;
+  }
+
+  [data-theme="light"] {
+    --vscode-editor-background: #ffffff;
+    --vscode-sideBar-background: #f8f8f8;
+    --vscode-titleBar-background: #f8f8f8;
+    --vscode-tab-activeBackground: #ffffff;
+    --vscode-tab-inactiveBackground: #ececec;
+    --vscode-foreground: #3b3b3b;
+    --vscode-editor-foreground: #3b3b3b;
+    --vscode-descriptionForeground: #767676;
+    --vscode-panel-border: #e5e5e5;
+    --vscode-widget-border: #00000017;
+    --vscode-input-background: #ffffff;
+    --vscode-input-foreground: #3b3b3b;
+    --vscode-input-border: #cecece;
+    --vscode-input-placeholderForeground: #767676;
+    --vscode-dropdown-background: #ffffff;
+    --vscode-dropdown-border: #cecece;
+    --vscode-button-background: #005fb8;
+    --vscode-button-foreground: #ffffff;
+    --vscode-button-hoverBackground: #0258a8;
+    --vscode-button-secondaryBackground: #e5e5e5;
+    --vscode-button-secondaryForeground: #3b3b3b;
+    --vscode-list-hoverBackground: #f0f0f0;
+    --vscode-list-activeSelectionBackground: #e4e6f1;
+    --vscode-list-activeSelectionForeground: #000000;
+    --vscode-list-inactiveSelectionBackground: #e4e4e4;
+    --vscode-focusBorder: #005fb8;
+    --vscode-textLink-foreground: #006ab1;
+    --vscode-errorForeground: #e51400;
+    --vscode-inputValidation-errorBorder: #e51400;
+    --vscode-badge-background: #cccccc;
+    --vscode-badge-foreground: #3b3b3b;
+    --vscode-icon-foreground: #424242;
+    --vscode-statusBar-background: #005fb8;
+    --vscode-statusBar-foreground: #ffffff;
+    --vscode-scrollbarSlider-background: #64646466;
+    --checker-a: #e8e8e8;
+    --checker-b: #f8f8f8;
+    color-scheme: light;
+  }
+
+  [data-theme="hc"] {
+    --vscode-editor-background: #000000;
+    --vscode-sideBar-background: #000000;
+    --vscode-titleBar-background: #000000;
+    --vscode-tab-activeBackground: #000000;
+    --vscode-tab-inactiveBackground: #000000;
+    --vscode-foreground: #ffffff;
+    --vscode-editor-foreground: #ffffff;
+    --vscode-descriptionForeground: #d4d4d4;
+    --vscode-panel-border: #6fc3df;
+    --vscode-widget-border: #6fc3df;
+    --vscode-input-background: #000000;
+    --vscode-input-foreground: #ffffff;
+    --vscode-input-border: #f38518;
+    --vscode-input-placeholderForeground: #cccccc;
+    --vscode-dropdown-background: #000000;
+    --vscode-dropdown-border: #f38518;
+    --vscode-button-background: #0e639c;
+    --vscode-button-foreground: #ffffff;
+    --vscode-button-hoverBackground: #1177bb;
+    --vscode-button-secondaryBackground: #000000;
+    --vscode-button-secondaryForeground: #ffffff;
+    --vscode-list-hoverBackground: #000000;
+    --vscode-list-activeSelectionBackground: #000000;
+    --vscode-list-activeSelectionForeground: #ffffff;
+    --vscode-list-inactiveSelectionBackground: #000000;
+    --vscode-focusBorder: #f38518;
+    --vscode-textLink-foreground: #6fc3df;
+    --vscode-errorForeground: #f48771;
+    --vscode-inputValidation-errorBorder: #f48771;
+    --vscode-badge-background: #000000;
+    --vscode-badge-foreground: #ffffff;
+    --vscode-icon-foreground: #ffffff;
+    --vscode-statusBar-background: #000000;
+    --vscode-statusBar-foreground: #ffffff;
+    --vscode-scrollbarSlider-background: #6fc3df66;
+    --checker-a: #2a2a2a;
+    --checker-b: #000000;
+    color-scheme: dark;
+  }
+  /* High-contrast adds visible borders everywhere. */
+  [data-theme="hc"] .row,
+  [data-theme="hc"] .grp-header { outline: 1px solid var(--vscode-widget-border); outline-offset: -1px; }
+
+  /* ============================================================= *
+   *  CHROME                                                        *
+   * ============================================================= */
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", system-ui, Ubuntu, "Droid Sans", sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--vscode-foreground);
+    background: var(--vscode-editor-background);
+    -webkit-font-smoothing: antialiased;
+  }
+  :root {
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, "Liberation Mono", monospace;
+    --u: 4px; /* 4px spacing base unit */
+  }
+  .mono { font-family: var(--mono); }
+  .muted { color: var(--vscode-descriptionForeground); }
+
+  .window {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-height: 600px;
+  }
+
+  /* --- Editor tab strip (the custom editor is a tab) --------------- */
+  .tabstrip {
+    display: flex;
+    align-items: stretch;
+    background: var(--vscode-tab-inactiveBackground);
+    border-bottom: 1px solid var(--vscode-panel-border);
+    height: 35px;
+    flex: none;
+  }
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px 0 12px;
+    font-size: 13px;
+    color: var(--vscode-descriptionForeground);
+    background: var(--vscode-tab-inactiveBackground);
+    border-right: 1px solid var(--vscode-panel-border);
+    max-width: 240px;
+  }
+  .tab.active {
+    color: var(--vscode-foreground);
+    background: var(--vscode-tab-activeBackground);
+    border-top: 1px solid var(--vscode-focusBorder);
+  }
+  .tab .dirty { width: 8px; height: 8px; border-radius: 50%; background: var(--vscode-foreground); }
+  .tab .x { margin-left: 4px; opacity: .7; }
+  .tabstrip .spacer { flex: 1; border-right: 1px solid var(--vscode-panel-border); }
+
+  /* --- Editor toolbar (above the token table) --------------------- */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--u);
+    padding: 6px 10px;
+    background: var(--vscode-editor-background);
+    border-bottom: 1px solid var(--vscode-panel-border);
+    flex: none;
+  }
+  .breadcrumb {
+    display: flex; align-items: center; gap: 5px;
+    color: var(--vscode-descriptionForeground);
+    font-size: 12px; min-width: 0;
+  }
+  .breadcrumb .seg { white-space: nowrap; }
+  .breadcrumb .seg.file { color: var(--vscode-foreground); }
+  .breadcrumb .chev { opacity: .6; }
+  .toolbar .grow { flex: 1; }
+
+  .search {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--vscode-input-background);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 2px;
+    padding: 2px 6px;
+    width: 190px;
+    color: var(--vscode-input-placeholderForeground);
+    font-size: 12px;
+  }
+  .search input {
+    border: 0; background: transparent; outline: 0; flex: 1;
+    color: var(--vscode-input-foreground); font-size: 12px;
+    font-family: inherit; min-width: 0;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    height: 24px; padding: 0 9px;
+    border-radius: 2px; border: 1px solid transparent;
+    font-size: 12px; font-family: inherit; cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
+  .btn-primary:hover { background: var(--vscode-button-hoverBackground); }
+  .btn-secondary {
+    background: var(--vscode-button-secondaryBackground);
+    color: var(--vscode-button-secondaryForeground);
+    border-color: var(--vscode-widget-border);
+  }
+  .iconbtn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 3px; cursor: pointer;
+    color: var(--vscode-icon-foreground); background: transparent; border: 0;
+  }
+  .iconbtn:hover { background: var(--vscode-list-hoverBackground); }
+
+  /* --- Scroll area + token table ---------------------------------- */
+  .editor {
+    flex: 1; overflow: auto; background: var(--vscode-editor-background);
+  }
+  .editor::-webkit-scrollbar { width: 14px; height: 14px; }
+  .editor::-webkit-scrollbar-thumb {
+    background: var(--vscode-scrollbarSlider-background);
+    border: 4px solid transparent; background-clip: padding-box; border-radius: 10px;
+  }
+
+  /* Column header row — aligns name vs value columns. */
+  .colhead {
+    display: flex; align-items: center;
+    height: 24px; padding: 0 12px 0 14px;
+    position: sticky; top: 0; z-index: 2;
+    background: var(--vscode-editor-background);
+    border-bottom: 1px solid var(--vscode-panel-border);
+    font-size: 11px; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--vscode-descriptionForeground);
+  }
+  .colhead .c-name { flex: 1; }
+  .colhead .c-value { width: var(--value-col); padding-left: 8px; }
+  .colhead .c-actions { width: 56px; }
+
+  :root { --value-col: 340px; --indent: 16px; }
+
+  /* Group header rows (collapsible, tree-indented). */
+  .grp-header {
+    display: flex; align-items: center; gap: 4px;
+    height: 26px; padding-right: 12px; cursor: default;
+    user-select: none;
+  }
+  .grp-header:hover { background: var(--vscode-list-hoverBackground); }
+  .grp-header .twisty {
+    width: 16px; height: 16px; display: inline-flex;
+    align-items: center; justify-content: center;
+    color: var(--vscode-icon-foreground); flex: none;
+  }
+  .grp-header .gname { font-weight: 600; color: var(--vscode-foreground); }
+  .grp-header .gname.mono { font-weight: 600; }
+  .count {
+    font-size: 11px; line-height: 16px;
+    background: var(--vscode-badge-background); color: var(--vscode-badge-foreground);
+    border-radius: 9px; padding: 0 6px; min-width: 18px; text-align: center;
+  }
+  .grp-header .gdesc {
+    color: var(--vscode-descriptionForeground); font-size: 12px;
+    margin-left: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* Token rows — two-column: name (+icon) | value editor. */
+  .row {
+    display: flex; align-items: center;
+    min-height: 26px; padding-right: 12px;
+    border-bottom: 1px solid transparent;
+  }
+  .row:hover { background: var(--vscode-list-hoverBackground); }
+  .row.selected {
+    background: var(--vscode-list-activeSelectionBackground);
+    color: var(--vscode-list-activeSelectionForeground);
+  }
+  .row.selected .muted,
+  .row.selected .tname { color: var(--vscode-list-activeSelectionForeground); }
+
+  .cell-name {
+    flex: 1; display: flex; align-items: center; gap: 7px;
+    min-width: 0; padding-right: 10px;
+  }
+  .ticon {
+    width: 16px; height: 16px; flex: none;
+    color: var(--vscode-icon-foreground);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .row.selected .ticon { color: var(--vscode-list-activeSelectionForeground); }
+  .tname { font-family: var(--mono); font-size: 12.5px; color: var(--vscode-editor-foreground); }
+  .tdesc {
+    font-size: 12px; color: var(--vscode-descriptionForeground);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    border-left: 1px solid var(--vscode-widget-border); padding-left: 8px; margin-left: 2px;
+  }
+  .type-badge {
+    font-size: 10.5px; font-family: var(--mono);
+    color: var(--vscode-descriptionForeground);
+    border: 1px solid var(--vscode-widget-border);
+    border-radius: 3px; padding: 0 4px; line-height: 15px; flex: none;
+  }
+
+  .cell-value {
+    width: var(--value-col); flex: none;
+    display: flex; align-items: center; gap: 6px;
+    padding-left: 8px;
+  }
+  .cell-actions {
+    width: 56px; flex: none; display: flex; gap: 2px; justify-content: flex-end;
+    opacity: 0; transition: opacity .05s;
+  }
+  .row:hover .cell-actions { opacity: 1; }
+
+  /* ---- Native-style field primitives ---------------------------- */
+  .field {
+    display: flex; align-items: center;
+    height: 22px; background: var(--vscode-input-background);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 2px; padding: 0 6px;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--vscode-input-foreground);
+  }
+  .field:focus-within { border-color: var(--vscode-focusBorder); }
+  .field input {
+    border: 0; outline: 0; background: transparent; width: 100%;
+    font-family: var(--mono); font-size: 12px; color: var(--vscode-input-foreground);
+    min-width: 0;
+  }
+  .field.num { width: 84px; }
+  .field.num input { text-align: right; }
+  .field.grow-field { flex: 1; }
+
+  .select {
+    position: relative; display: inline-flex; align-items: center;
+    height: 22px; padding: 0 22px 0 8px;
+    background: var(--vscode-dropdown-background);
+    border: 1px solid var(--vscode-dropdown-border);
+    border-radius: 2px; font-size: 12px; font-family: var(--mono);
+    color: var(--vscode-input-foreground); cursor: pointer; white-space: nowrap;
+  }
+  .select:hover { border-color: var(--vscode-focusBorder); }
+  .select::after {
+    content: ""; position: absolute; right: 7px; top: 50%;
+    width: 7px; height: 7px; margin-top: -4px;
+    border-right: 1.3px solid var(--vscode-icon-foreground);
+    border-bottom: 1.3px solid var(--vscode-icon-foreground);
+    transform: rotate(45deg);
+  }
+  .select.unit { min-width: 58px; }
+
+  /* ---- Color swatch ---------------------------------------------- */
+  .swatch {
+    width: 16px; height: 16px; flex: none; border-radius: 3px;
+    border: 1px solid var(--vscode-widget-border);
+    background-image:
+      linear-gradient(var(--sw), var(--sw)),
+      linear-gradient(45deg, var(--checker-a) 25%, transparent 25%, transparent 75%, var(--checker-a) 75%),
+      linear-gradient(45deg, var(--checker-a) 25%, var(--checker-b) 25%, var(--checker-b) 75%, var(--checker-a) 75%);
+    background-size: 100% 100%, 8px 8px, 8px 8px;
+    background-position: 0 0, 0 0, 4px 4px;
+  }
+
+  /* ---- Expanded attribute editor (inline row expansion) ---------- */
+  /* A token row expands in place into a compact form for its full
+     attribute set: name, $type, $value, $description, $extensions.
+     Quiet inset — left accent rule, faint fill, hairline top/bottom.
+     No card / shadow / rounded container (hard rule #5). */
+  .row.expanded { background: var(--vscode-list-inactiveSelectionBackground); }
+  .row.expanded .cell-actions { opacity: 1; }
+  .expand-chev { transition: transform .1s; }
+  .row.expanded .expand-chev { transform: rotate(90deg); }
+
+  .detail {
+    border-top: 1px solid var(--vscode-widget-border);
+    border-bottom: 1px solid var(--vscode-widget-border);
+    border-left: 2px solid var(--vscode-focusBorder);
+    background: var(--vscode-list-inactiveSelectionBackground);
+    padding: 10px 14px 12px 50px; /* left aligns under the token name */
+  }
+  .detail-grid {
+    display: grid; grid-template-columns: 92px minmax(0, 360px);
+    gap: 7px 14px; align-items: center;
+  }
+  .detail-grid > label {
+    font-size: 12px; color: var(--vscode-descriptionForeground);
+    justify-self: start; align-self: center;
+  }
+  .detail-grid > label .req { color: var(--vscode-errorForeground); }
+  .detail-grid .control { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .detail-grid textarea {
+    resize: vertical; min-height: 38px; width: 100%;
+    background: var(--vscode-input-background); color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border); border-radius: 2px;
+    padding: 4px 6px; font-family: inherit; font-size: 12px; line-height: 1.45; outline: 0;
+  }
+  .detail-grid textarea:focus { border-color: var(--vscode-focusBorder); }
+  .detail-grid .field.grow-field { flex: 1; }
+  .hint {
+    grid-column: 2; font-size: 11.5px; color: var(--vscode-descriptionForeground);
+    display: flex; align-items: center; gap: 5px; margin-top: -2px;
+  }
+  .hint svg { flex: none; }
+  /* $extensions: preserved verbatim, surfaced read-only with a raw peek. */
+  .ext-summary {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--vscode-descriptionForeground);
+  }
+  .ext-summary code {
+    font-family: var(--mono); font-size: 11.5px;
+    border: 1px solid var(--vscode-widget-border); border-radius: 3px; padding: 0 5px;
+  }
+  .linkbtn {
+    background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit;
+    font-size: 12px; color: var(--vscode-textLink-foreground); text-decoration: none;
+  }
+  .linkbtn:hover { text-decoration: underline; }
+  .detail-actions {
+    display: flex; align-items: center; gap: 16px; margin-top: 11px; padding-top: 9px;
+    border-top: 1px solid var(--vscode-widget-border);
+  }
+  .detail-actions .danger { color: var(--vscode-errorForeground); }
+  .detail-actions .grow { flex: 1; }
+
+  /* Group-header attribute editing. The twisty toggles CHILDREN; a separate
+     hover action opens the group's own attribute form (name/$description/$type)
+     between the header and its children. */
+  .grp-actions { margin-left: auto; display: flex; gap: 2px; opacity: 0; padding-left: 8px; }
+  .grp-header:hover .grp-actions,
+  .grp-header.editing .grp-actions { opacity: 1; }
+  .grp-header.editing { background: var(--vscode-list-inactiveSelectionBackground); }
+  .grp-edit-chev { transition: transform .1s; }
+  .grp-header.editing .grp-edit-chev { transform: rotate(90deg); }
+  .detail.detail-group { padding-left: 30px; } /* aligns under the group name */
+  /* Togglable triggers (mock interactivity) get a pointer affordance. */
+  #row-primary .cell-name { cursor: pointer; }
+  .grp-edit-btn { cursor: pointer; }
+
+  /* Alias chip (one row included so the layout proves it accommodates refs). */
+  .alias-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--vscode-textLink-foreground);
+    border: 1px solid var(--vscode-widget-border);
+    border-radius: 10px; padding: 1px 8px 1px 6px; height: 20px;
+  }
+  .alias-resolved { color: var(--vscode-descriptionForeground); font-family: var(--mono); font-size: 12px; }
+
+  /* Read-only unknown token (preserved, not editable — AC-3). */
+  .readonly-val {
+    font-family: var(--mono); font-size: 12px;
+    color: var(--vscode-descriptionForeground);
+    background: repeating-linear-gradient(45deg, transparent, transparent 5px, var(--vscode-widget-border) 5px, var(--vscode-widget-border) 6px);
+    border: 1px dashed var(--vscode-widget-border); border-radius: 2px;
+    padding: 1px 7px; opacity: .9;
+  }
+  .lock { color: var(--vscode-descriptionForeground); }
+
+  svg { display: block; }
+
+  /* --- Status bar -------------------------------------------------- */
+  .statusbar {
+    flex: none; height: 22px; display: flex; align-items: center; gap: 14px;
+    padding: 0 10px; font-size: 12px;
+    background: var(--vscode-statusBar-background); color: var(--vscode-statusBar-foreground);
+  }
+  .statusbar .si { display: inline-flex; align-items: center; gap: 5px; }
+  .statusbar .grow { flex: 1; }
+
+  /* --- Theme switcher (mock-only affordance, top-right) ------------ */
+  .themepick { display: inline-flex; border: 1px solid var(--vscode-widget-border); border-radius: 3px; overflow: hidden; }
+  .themepick button {
+    font-family: inherit; font-size: 11px; padding: 2px 8px; cursor: pointer; border: 0;
+    background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground);
+    border-left: 1px solid var(--vscode-widget-border);
+  }
+  .themepick button:first-child { border-left: 0; }
+  .themepick button.on { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
+</style>
+</head>
+<body data-theme="dark">
+<div class="window">
+
+  <!-- ===== Editor tab strip ===== -->
+  <div class="tabstrip">
+    <div class="tab active" title="Editing as GUI — use 'Reopen with…' for raw JSON">
+      <span class="ticon" aria-hidden="true">
+        <!-- symbol-color / token doc icon -->
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.2" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="5.4" r="1" fill="currentColor"/><circle cx="10.2" cy="8.4" r="1" fill="currentColor"/><circle cx="6" cy="9.6" r="1" fill="currentColor"/></svg>
+      </span>
+      couplefi.tokens.json
+      <span class="dirty" title="Unsaved changes"></span>
+      <span class="x" aria-hidden="true">✕</span>
+    </div>
+    <div class="tab"><span class="muted">colors.tokens.json</span><span class="x" aria-hidden="true">✕</span></div>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- ===== Editor toolbar ===== -->
+  <div class="toolbar">
+    <div class="breadcrumb">
+      <span class="seg">tokens</span><span class="chev">›</span>
+      <span class="seg file mono">couplefi.tokens.json</span>
+    </div>
+    <span class="grow"></span>
+
+    <div class="search">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.3" stroke="currentColor" stroke-width="1.2"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <input placeholder="Filter tokens" />
+    </div>
+    <button class="btn btn-secondary" title="Reopen this file as raw JSON text">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M5.5 3.5L2.5 8l3 4.5M10.5 3.5L13.5 8l-3 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Open as Text
+    </button>
+    <button class="btn btn-primary" title="Add a new token">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3.5v9M3.5 8h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Add token
+    </button>
+    <button class="iconbtn" title="Collapse all"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
+
+  <!-- ===== Token table ===== -->
+  <div class="editor">
+
+    <!-- column header -->
+    <div class="colhead">
+      <div class="c-name">Token</div>
+      <div class="c-value">Value</div>
+      <div class="c-actions"></div>
+    </div>
+
+    <!-- ============================================ GROUP: color -->
+    <!-- Shown with its group-attribute editor OPEN (the `editing` state). -->
+    <div class="grp-header editing" id="grp-color" style="padding-left:8px">
+      <span class="twisty" title="Collapse children"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 8 8)"/></svg></span>
+      <span class="gname mono">color</span>
+      <span class="count">6</span>
+      <span class="gdesc">Brand &amp; neutral primitives</span>
+      <span class="grp-actions">
+        <button class="iconbtn" title="Add token to this group"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3.5v9M3.5 8h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+        <button class="iconbtn grp-edit-btn" title="Edit group attributes">
+          <span class="grp-edit-chev"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="iconbtn" title="More actions">⋯</button>
+      </span>
+    </div>
+
+    <!-- Inline attribute editor for the `color` group -->
+    <div class="detail detail-group">
+      <div class="detail-grid">
+        <label>Name <span class="req" title="required">*</span></label>
+        <div class="control"><div class="field grow-field"><input value="color" spellcheck="false" /></div></div>
+        <div class="hint">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Renaming updates every descendant alias path (e.g. <span class="mono">{color.brand.primary}</span>).
+        </div>
+
+        <label>Description</label>
+        <div class="control"><textarea spellcheck="false">Brand &amp; neutral primitives</textarea></div>
+
+        <label>Default type</label>
+        <div class="control">
+          <span class="select" style="min-width:130px" title="DTCG $type — descendants without their own $type inherit this">
+            <span style="display:inline-flex;align-items:center;gap:6px">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="3" y="3" width="10" height="10" rx="2.3" fill="currentColor"/></svg>
+              color
+            </span>
+          </span>
+          <button class="linkbtn" title="Remove the group default type">clear</button>
+        </div>
+        <div class="hint">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.1"/><path d="M8 7.2v4M8 5.2v.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Inherited by child tokens that don't set their own <span class="mono">$type</span>.
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="linkbtn" title="Add a token to this group">Add token</button>
+        <button class="linkbtn" title="Add a nested group">Add group</button>
+        <span class="grow"></span>
+        <button class="linkbtn danger" title="Delete group and its contents">Delete group…</button>
+      </div>
+    </div>
+
+    <!-- subgroup: brand -->
+    <div class="grp-header" style="padding-left:30px">
+      <span class="twisty"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 8 8)"/></svg></span>
+      <span class="gname mono">brand</span>
+      <span class="count">2</span>
+    </div>
+
+    <!-- ── COLOR editor: swatch + hex text entry ── -->
+    <!-- This row is shown EXPANDED (inline row expansion) to demonstrate the
+         full per-token attribute editor. Other rows are in collapsed state. -->
+    <div class="row selected expanded" id="row-primary" style="padding-left:52px">
+      <div class="cell-name">
+        <span class="ticon" title="color">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="2.5" width="11" height="11" rx="2.5" fill="currentColor"/></svg>
+        </span>
+        <span class="tname">primary</span>
+      </div>
+      <div class="cell-value">
+        <span class="swatch" style="--sw:#5b5bd6"></span>
+        <div class="field grow-field"><input value="#5B5BD6" spellcheck="false" /></div>
+      </div>
+      <div class="cell-actions">
+        <button class="iconbtn" title="Collapse attribute editor">
+          <span class="expand-chev"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Inline attribute editor for color.brand.primary -->
+    <div class="detail">
+      <div class="detail-grid">
+        <label>Name <span class="req" title="required">*</span></label>
+        <div class="control"><div class="field grow-field"><input value="primary" spellcheck="false" /></div></div>
+
+        <label>Type</label>
+        <div class="control">
+          <span class="select" style="min-width:130px" title="DTCG $type — changing it swaps the value editor below">
+            <span style="display:inline-flex;align-items:center;gap:6px">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="3" y="3" width="10" height="10" rx="2.3" fill="currentColor"/></svg>
+              color
+            </span>
+          </span>
+        </div>
+        <div class="hint">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.1"/><path d="M8 7.2v4M8 5.2v.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Switching type swaps the editor (e.g. color → dimension shows a unit selector).
+        </div>
+
+        <label>Value</label>
+        <div class="control">
+          <span class="swatch" style="--sw:#5b5bd6"></span>
+          <div class="field grow-field"><input value="#5B5BD6" spellcheck="false" /></div>
+          <button class="iconbtn" title="Open color picker">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M11 2.5l2.5 2.5-6.4 6.4-3 .5.5-3L11 2.5z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <label>Description</label>
+        <div class="control"><textarea spellcheck="false">Primary brand color. Used for primary actions and active states.</textarea></div>
+
+        <label>Extensions</label>
+        <div class="control">
+          <div class="ext-summary">
+            <code>com.couplefi.figmaId</code>
+            <span class="muted">+1 more · preserved</span>
+            <button class="linkbtn" title="Shown read-only — round-tripped verbatim on save">View raw</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="linkbtn" title="Duplicate this token">Duplicate</button>
+        <button class="linkbtn" title="Convert to an alias / reference">Make alias…</button>
+        <span class="grow"></span>
+        <button class="linkbtn danger" title="Delete token">Delete</button>
+      </div>
+    </div>
+
+    <div class="row" style="padding-left:52px">
+      <div class="cell-name">
+        <span class="ticon" title="color"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="2.5" width="11" height="11" rx="2.5" fill="currentColor"/></svg></span>
+        <span class="tname">secondary</span>
+        <span class="tdesc">Accent / links</span>
+      </div>
+      <div class="cell-value">
+        <span class="swatch" style="--sw:#12b5a8"></span>
+        <div class="field grow-field"><input value="#12B5A8" spellcheck="false" /></div>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <!-- subgroup: neutral -->
+    <div class="grp-header" style="padding-left:30px">
+      <span class="twisty"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 8 8)"/></svg></span>
+      <span class="gname mono">neutral</span>
+      <span class="count">3</span>
+    </div>
+
+    <div class="row" style="padding-left:52px">
+      <div class="cell-name">
+        <span class="ticon" title="color"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="2.5" width="11" height="11" rx="2.5" fill="currentColor"/></svg></span>
+        <span class="tname">white</span>
+      </div>
+      <div class="cell-value">
+        <span class="swatch" style="--sw:#ffffff"></span>
+        <div class="field grow-field"><input value="#FFFFFF" spellcheck="false" /></div>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <div class="row" style="padding-left:52px">
+      <div class="cell-name">
+        <span class="ticon" title="color"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="2.5" width="11" height="11" rx="2.5" fill="currentColor"/></svg></span>
+        <span class="tname">ink-900</span>
+      </div>
+      <div class="cell-value">
+        <span class="swatch" style="--sw:#16161d"></span>
+        <div class="field grow-field"><input value="#16161D" spellcheck="false" /></div>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <!-- alpha color → checkerboard shows through swatch -->
+    <div class="row" style="padding-left:52px">
+      <div class="cell-name">
+        <span class="ticon" title="color"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="2.5" width="11" height="11" rx="2.5" fill="currentColor"/></svg></span>
+        <span class="tname">scrim</span>
+        <span class="tdesc">40% modal overlay</span>
+      </div>
+      <div class="cell-value">
+        <span class="swatch" style="--sw:rgba(22,22,29,.4)"></span>
+        <div class="field grow-field"><input value="#16161D66" spellcheck="false" /></div>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <!-- ============================================ GROUP: space -->
+    <div class="grp-header" style="padding-left:8px">
+      <span class="twisty"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 8 8)"/></svg></span>
+      <span class="gname mono">space</span>
+      <span class="count">3</span>
+      <span class="gdesc">Spacing &amp; radius — dimension tokens</span>
+    </div>
+
+    <!-- ── DIMENSION editor: numeric value + unit selector ── -->
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon" title="dimension">
+          <!-- ruler -->
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M5 5v2M8 5v2.6M11 5v2" stroke="currentColor" stroke-width="1.1"/></svg>
+        </span>
+        <span class="tname">sm</span>
+      </div>
+      <div class="cell-value">
+        <div class="field num"><input value="8" /></div>
+        <span class="select unit" title="Unit">px</span>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon" title="dimension"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M5 5v2M8 5v2.6M11 5v2" stroke="currentColor" stroke-width="1.1"/></svg></span>
+        <span class="tname">md</span>
+      </div>
+      <div class="cell-value">
+        <div class="field num"><input value="16" /></div>
+        <span class="select unit" title="Unit">px</span>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon" title="dimension"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M5 5v2M8 5v2.6M11 5v2" stroke="currentColor" stroke-width="1.1"/></svg></span>
+        <span class="tname">radius-md</span>
+        <span class="tdesc">Card / button corner</span>
+      </div>
+      <div class="cell-value">
+        <div class="field num"><input value="0.375" /></div>
+        <span class="select unit" title="Unit">rem</span>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <!-- ============================================ GROUP: scale -->
+    <div class="grp-header" style="padding-left:8px">
+      <span class="twisty"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 8 8)"/></svg></span>
+      <span class="gname mono">scale</span>
+      <span class="count">2</span>
+      <span class="gdesc">Unitless ratios — number tokens (CoupleFi pre-migration)</span>
+    </div>
+
+    <!-- ── NUMBER editor: plain numeric entry, no unit ── -->
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon" title="number">
+          <!-- symbol-numeric -->
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M5.5 3L4 13M11.5 3L10 13M3 6h10M2.5 10h10" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/></svg>
+        </span>
+        <span class="tname">base</span>
+      </div>
+      <div class="cell-value">
+        <div class="field num"><input value="4" /></div>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon" title="number"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M5.5 3L4 13M11.5 3L10 13M3 6h10M2.5 10h10" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/></svg></span>
+        <span class="tname">line-height-tight</span>
+      </div>
+      <div class="cell-value">
+        <div class="field num"><input value="1.2" /></div>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <!-- ============================================ GROUP: font -->
+    <div class="grp-header" style="padding-left:8px">
+      <span class="twisty"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 8 8)"/></svg></span>
+      <span class="gname mono">font</span>
+      <span class="count">4</span>
+      <span class="gdesc">Families &amp; weights</span>
+    </div>
+
+    <!-- ── FONT-FAMILY editor: string / font-stack entry ── -->
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon" title="fontFamily">
+          <!-- text-size Aa -->
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M1.5 13L4.5 4l3 9M2.4 10.2h4.2" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 13l2.5-6 2.5 6M9.7 11.2h3.6" stroke="currentColor" stroke-width="1.05" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="tname">sans</span>
+      </div>
+      <div class="cell-value">
+        <div class="field grow-field"><input value="Inter, system-ui, sans-serif" spellcheck="false" /></div>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon" title="fontFamily"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M1.5 13L4.5 4l3 9M2.4 10.2h4.2" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 13l2.5-6 2.5 6M9.7 11.2h3.6" stroke="currentColor" stroke-width="1.05" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="tname">mono</span>
+      </div>
+      <div class="cell-value">
+        <div class="field grow-field"><input value="JetBrains Mono, ui-monospace, monospace" spellcheck="false" /></div>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <!-- ── FONT-WEIGHT editor: numeric or keyword entry ── -->
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon" title="fontWeight">
+          <!-- bold B -->
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M4.5 3.5h4.2c1.6 0 2.6.9 2.6 2.2 0 1.1-.7 1.9-1.8 2.1 1.3.1 2.2 1 2.2 2.3 0 1.5-1.1 2.4-2.9 2.4H4.5V3.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M6.4 3.5v9" stroke="currentColor" stroke-width="1.2"/></svg>
+        </span>
+        <span class="tname">regular</span>
+      </div>
+      <div class="cell-value">
+        <span class="select" style="min-width:118px" title="Numeric weight or CSS keyword">400 · Regular</span>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon" title="fontWeight"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M4.5 3.5h4.2c1.6 0 2.6.9 2.6 2.2 0 1.1-.7 1.9-1.8 2.1 1.3.1 2.2 1 2.2 2.3 0 1.5-1.1 2.4-2.9 2.4H4.5V3.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M6.4 3.5v9" stroke="currentColor" stroke-width="1.2"/></svg></span>
+        <span class="tname">bold</span>
+      </div>
+      <div class="cell-value">
+        <span class="select" style="min-width:118px" title="Numeric weight or CSS keyword">700 · Bold</span>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <!-- ============================================ GROUP: semantic (refs + unknown) -->
+    <div class="grp-header" style="padding-left:8px">
+      <span class="twisty"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 8 8)"/></svg></span>
+      <span class="gname mono">semantic</span>
+      <span class="count">2</span>
+      <span class="gdesc">References &amp; preserved unknowns</span>
+    </div>
+
+    <!-- alias row — included so the layout demonstrably holds references (full
+         resolved-value treatment is mock #2). Shows {alias} chip + resolved value. -->
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon" title="alias → color">
+          <!-- link -->
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6.5 9.5l3-3M7 4.2l.9-.9a2.3 2.3 0 013.3 3.3l-1.6 1.6M9 11.8l-.9.9a2.3 2.3 0 01-3.3-3.3l1.6-1.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="tname">action</span>
+      </div>
+      <div class="cell-value">
+        <span class="swatch" style="--sw:#5b5bd6"></span>
+        <span class="alias-chip">{color.brand.primary}</span>
+        <span class="alias-resolved">→ #5B5BD6</span>
+      </div>
+      <div class="cell-actions"><button class="iconbtn" title="More actions">⋯</button></div>
+    </div>
+
+    <!-- read-only unknown token — preserved, shown, not editable (AC-3) -->
+    <div class="row" style="padding-left:30px">
+      <div class="cell-name">
+        <span class="ticon lock" title="unknown type — read-only, preserved">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="3.5" y="7" width="9" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M5.5 7V5.5a2.5 2.5 0 015 0V7" stroke="currentColor" stroke-width="1.2"/></svg>
+        </span>
+        <span class="tname muted">gradient-hero</span>
+        <span class="type-badge">$type: gradient</span>
+      </div>
+      <div class="cell-value">
+        <span class="readonly-val" title="Unknown DTCG type — preserved verbatim on save">[ 2 stops ] · read-only</span>
+      </div>
+      <div class="cell-actions"></div>
+    </div>
+
+    <div style="height:40px"></div>
+  </div>
+
+  <!-- ===== Status bar ===== -->
+  <div class="statusbar">
+    <span class="si">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l2 4.2 4.5.5-3.3 3 .9 4.5L8 11.5 3.9 13.7l.9-4.5L1.5 6.2 6 5.7 8 1.5z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+      17 tokens · 5 groups
+    </span>
+    <span class="si">DTCG · couplefi.tokens.json</span>
+    <span class="grow"></span>
+    <span class="si" title="Mock-only theme switch — proves the var(--vscode-*) design adapts with no per-theme art">
+      Theme
+      <span class="themepick">
+        <button class="on" data-set="dark">Dark</button>
+        <button data-set="light">Light</button>
+        <button data-set="hc">High&nbsp;contrast</button>
+      </span>
+    </span>
+  </div>
+
+</div>
+
+<script>
+  // Mock-only: theme switch swaps the variable block. No product logic.
+  document.querySelectorAll('.themepick button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.themepick button').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      var t = b.getAttribute('data-set');
+      document.documentElement.setAttribute('data-theme', t);
+      document.body.setAttribute('data-theme', t);
+    });
+  });
+
+  // Mock-only: toggle the inline attribute editors open/closed.
+  // The .detail panel is the next sibling of its row/header.
+  function makeToggle(headerEl, openClass) {
+    if (!headerEl) return function () {};
+    var detail = headerEl.nextElementSibling;
+    return function () {
+      var open = !headerEl.classList.contains(openClass);
+      headerEl.classList.toggle(openClass, open);
+      detail.style.display = open ? '' : 'none';
+    };
+  }
+
+  // Token: color.brand.primary — toggle via the name or the chevron button.
+  var rowPrimary = document.getElementById('row-primary');
+  var toggleToken = makeToggle(rowPrimary, 'expanded');
+  rowPrimary.querySelector('.cell-name').addEventListener('click', toggleToken);
+  rowPrimary.querySelector('.cell-actions .iconbtn').addEventListener('click', function (e) {
+    e.stopPropagation();
+    toggleToken();
+  });
+
+  // Group: color — toggle via the edit chevron action.
+  var grpColor = document.getElementById('grp-color');
+  var toggleGroup = makeToggle(grpColor, 'editing');
+  grpColor.querySelector('.grp-edit-btn').addEventListener('click', function (e) {
+    e.stopPropagation();
+    toggleGroup();
+  });
+</script>
+</body>
+</html>
