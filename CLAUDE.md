@@ -4,7 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-This repo is **pre-implementation**. There is currently no source code, `package.json`, or build tooling — only specs, research, and design docs. **Phase 1 is fully specced and ready to build** (target: internal beta in ~1 week). When you scaffold the project, replace this section with the real build/lint/test commands.
+The dev environment is **scaffolded**; Phase 1 feature work is in progress (target: internal beta in ~1 week). The repo is a **pnpm workspace** with the three-layer package split described below. Source folders are stubbed with wiring that proves the dev loop (custom editor + tree + webview render); the real DTCG model, resolver, editors, and color picker are the Phase 1 build.
+
+### Build / test / run
+
+Requires Node ≥20 and pnpm (via `corepack enable`).
+
+- `pnpm install` — install all workspace packages.
+- `pnpm build` — bundle webview then extension into `packages/extension/dist/` (esbuild).
+- `pnpm watch` — rebuild webview + extension on change (used by the F5 debug task).
+- `pnpm test` — run the `@dtm/core` Vitest suite (no Extension Host; AC-11).
+- `pnpm typecheck` — `tsc --noEmit` across packages.
+- `pnpm lint` — ESLint, incl. the core import-boundary rule (no `vscode` in `core/`).
+- `pnpm package` — build + `vsce package --no-dependencies` → a `.vsix` (no Marketplace).
+- **Debug:** press **F5** (the "Run Extension" launch config) to open the Extension Development Host on `fixtures/`.
+
+Test token files live in [fixtures/](fixtures/) — a Token Studio multi-file set (`$metadata.json` `tokenSetOrder`, `$themes.json`, `reference/` + `theme/` files) intentionally loose-typed to exercise normalization, cross-file aliases, and unknown-type passthrough.
 
 ### Where things live (read these before coding)
 

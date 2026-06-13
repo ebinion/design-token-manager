@@ -1,0 +1,134 @@
+{
+  "name": "design-token-manager",
+  "displayName": "Design Token Manager",
+  "description": "Manage W3C DTCG design tokens through a git-friendly visual GUI.",
+  "version": "0.0.1",
+  "publisher": "couplefi",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": ["Visualization", "Other"],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCustomEditor:dtm.tokenEditor",
+    "onView:dtm.tokenTree"
+  ],
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "dtm.tokenEditor",
+        "displayName": "Design Token Manager",
+        "selector": [{ "filenamePattern": "**/*.tokens.json" }],
+        "priority": "option"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "dtm",
+          "title": "Design Tokens",
+          "icon": "$(symbol-color)"
+        }
+      ]
+    },
+    "views": {
+      "dtm": [
+        {
+          "id": "dtm.tokenTree",
+          "name": "Tokens",
+          "contextualTitle": "Design Tokens"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "dtm.tokenTree",
+        "contents": "No token files found in this workspace.\nDesign Token Manager looks for [DTCG](https://www.designtokens.org) files matching your token glob (default `**/*.tokens.json`).\n[Create your first token file](command:dtm.createTokenFile)"
+      }
+    ],
+    "commands": [
+      {
+        "command": "dtm.createTokenFile",
+        "title": "Create Token File",
+        "category": "Design Tokens",
+        "icon": "$(new-file)"
+      },
+      {
+        "command": "dtm.createToken",
+        "title": "Create Token",
+        "category": "Design Tokens",
+        "icon": "$(add)"
+      },
+      {
+        "command": "dtm.createGroup",
+        "title": "Create Group",
+        "category": "Design Tokens",
+        "icon": "$(new-folder)"
+      },
+      {
+        "command": "dtm.delete",
+        "title": "Delete",
+        "category": "Design Tokens",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "dtm.refresh",
+        "title": "Refresh",
+        "category": "Design Tokens",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "dtm.createToken",
+          "when": "view == dtm.tokenTree",
+          "group": "navigation@1"
+        },
+        {
+          "command": "dtm.createGroup",
+          "when": "view == dtm.tokenTree",
+          "group": "navigation@2"
+        },
+        {
+          "command": "dtm.refresh",
+          "when": "view == dtm.tokenTree",
+          "group": "navigation@3"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "dtm.delete",
+          "when": "view == dtm.tokenTree && viewItem =~ /^dtm\\.(token|group)$/",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Design Token Manager",
+      "properties": {
+        "dtm.tokenFileGlob": {
+          "type": "string",
+          "default": "**/*.tokens.json",
+          "markdownDescription": "Glob used to discover DTCG token files in the workspace. The `.tokens.json` convention is recommended (FR-1.6)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs --production",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "package": "vsce package --no-dependencies -o design-token-manager.vsix"
+  },
+  "dependencies": {
+    "@dtm/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.96.0",
+    "@vscode/vsce": "^3.2.1",
+    "esbuild": "^0.24.0"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "color": {
+    "$type": "color",
+    "neutral": {
+      "0": { "$value": "#ffffff" },
+      "100": { "$value": "#f5f5f5" },
+      "900": { "$value": "#171717" },
+      "1000": { "$value": "#000000" }
+    },
+    "blue": {
+      "500": { "$value": "#3b82f6", "$description": "CoupleFi brand blue" },
+      "950": { "$value": "#172554" }
+    }
+  },
+  "size": {
+    "$type": "number",
+    "spacing": {
+      "sm": { "$value": 8 },
+      "md": { "$value": 16 },
+      "lg": { "$value": 24 }
+    },
+    "radius": {
+      "md": { "$value": 8 }
+    }
+  },
+  "font": {
+    "family": {
+      "$type": "text",
+      "sans": { "$value": "Inter", "$description": "Primary UI typeface" },
+      "mono": { "$value": "JetBrains Mono" }
+    },
+    "weight": {
+      "$type": "number",
+      "regular": { "$value": 400 },
+      "bold": { "$value": 700 }
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": {
+        "$type": "vendorDuration",
+        "$value": "120ms",
+        "$description": "Unknown/out-of-scope $type — must round-trip untouched (AC-3).",
+        "$extensions": {
+          "io.couplefi.source": "figma-variables"
+        }
+      }
+    }
+  }
+}

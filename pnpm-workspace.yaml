@@ -1,0 +1,10 @@
+packages:
+  - 'packages/*'
+
+# esbuild needs its install script to fetch the platform binary (required for builds).
+# vsce-sign / keytar are only used for Marketplace signing & auth — we package
+# internally with `vsce package --no-dependencies`, so they stay disabled.
+allowBuilds:
+  '@vscode/vsce-sign': false
+  esbuild: true
+  keytar: false

@@ -1,0 +1,9 @@
+# Ship only the bundled runtime; the .vsix needs dist/ and the manifest, nothing else.
+src/**
+**/*.ts
+**/*.map
+tsconfig.json
+esbuild.mjs
+.vscode/**
+**/.eslint*
+node_modules/**

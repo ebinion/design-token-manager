@@ -1,0 +1,40 @@
+/* Theme-aware styling: only VS Code theme variables, so the GUI reads as a
+   first-party panel in light, dark, and high-contrast (FR-2.6 / AC-10). */
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  color: var(--vscode-foreground);
+  background-color: var(--vscode-editor-background);
+}
+
+#root {
+  padding: 12px 16px;
+}
+
+.dtm-header {
+  font-weight: 600;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--vscode-panel-border, var(--vscode-editorWidget-border));
+}
+
+.dtm-note {
+  color: var(--vscode-descriptionForeground);
+  font-size: 0.9em;
+}
+
+.dtm-raw {
+  margin-top: 8px;
+  padding: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--vscode-editor-font-family, monospace);
+  background-color: var(--vscode-textCodeBlock-background);
+  border: 1px solid var(--vscode-editorWidget-border);
+  border-radius: 4px;
+}

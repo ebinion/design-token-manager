@@ -1,0 +1,26 @@
+{
+  "name": "dtm-workspace",
+  "version": "0.0.1",
+  "description": "Workspace root for Design Token Manager — a VS Code extension for managing W3C DTCG design tokens through a git-friendly GUI.",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.5.2",
+  "scripts": {
+    "build": "pnpm --filter @dtm/webview run build && pnpm --filter design-token-manager run build",
+    "watch": "pnpm --parallel --filter @dtm/webview --filter design-token-manager run watch",
+    "test": "pnpm --filter @dtm/core run test",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "eslint .",
+    "package": "pnpm run build && pnpm --filter design-token-manager run package"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0"
+  }
+}

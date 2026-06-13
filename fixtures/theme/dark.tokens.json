@@ -1,0 +1,14 @@
+{
+  "color": {
+    "$type": "color",
+    "background": {
+      "default": { "$value": "{color.neutral.1000}" },
+      "subtle": { "$value": "{color.neutral.900}" },
+      "emphasis": { "$value": "{color.blue.950}" }
+    },
+    "text": {
+      "default": { "$value": "{color.neutral.0}" },
+      "onEmphasis": { "$value": "{color.neutral.0}" }
+    }
+  }
+}
