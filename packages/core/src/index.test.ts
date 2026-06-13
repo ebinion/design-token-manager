@@ -1,11 +1,26 @@
 import { describe, expect, it } from 'vitest';
-import { CORE_VERSION } from './index.js';
+import * as core from './index.js';
 
-// Placeholder smoke test — proves the Vitest gate runs without the Extension
-// Host (AC-11). Replace/expand with the real parse/serialize round-trip,
-// cross-file alias resolution, and cycle-detection golden tests (AC-4/5/7).
-describe('@dtm/core', () => {
+// Smoke test for the public barrel: proves @dtm/core loads outside the VS Code
+// Extension Host (AC-11) and exposes the Day-2 API surface. Behavior is covered
+// by the per-layer suites (parse/, model/, serialize/, roundtrip).
+describe('@dtm/core barrel', () => {
   it('loads outside the VS Code Extension Host', () => {
-    expect(CORE_VERSION).toBe('0.0.1');
+    expect(core.CORE_VERSION).toBe('0.0.1');
+  });
+
+  it('exposes the parse + serialize + model API', () => {
+    for (const name of [
+      'parseDocument',
+      'setTokenValue',
+      'renameNode',
+      'printDocument',
+      'effectiveType',
+      'displayType',
+      'isAlias',
+      'normalizeType',
+    ] as const) {
+      expect(typeof core[name]).toBe('function');
+    }
   });
 });

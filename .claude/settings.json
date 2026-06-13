@@ -7,7 +7,10 @@
       "Bash(pnpm test *)",
       "Bash(pnpm typecheck *)",
       "Bash(pnpm lint *)",
-      "Bash(pnpm package *)"
+      "Bash(pnpm package *)",
+      "Bash(pnpm build *)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm --filter @dtm/core exec vitest run src/_demo.test.ts)"
     ]
   }
 }

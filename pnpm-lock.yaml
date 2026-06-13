@@ -25,6 +25,10 @@ importers:
         version: 8.61.0(eslint@9.39.4)(typescript@5.9.3)
 
   packages/core:
+    dependencies:
+      jsonc-parser:
+        specifier: ^3.3.1
+        version: 3.3.1
     devDependencies:
       vitest:
         specifier: ^2.1.8
