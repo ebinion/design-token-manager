@@ -4,9 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-This repo is **pre-implementation**. There is currently no source code, `package.json`, or build tooling — only product specs in [specs/](specs/) and a stub [README.md](README.md). When scaffolding the project, update this file with the real build/lint/test commands.
+This repo is **pre-implementation**. There is currently no source code, `package.json`, or build tooling — only specs, research, and design docs. **Phase 1 is fully specced and ready to build** (target: internal beta in ~1 week). When you scaffold the project, replace this section with the real build/lint/test commands.
 
-The authoritative product definition is [specs/high-level-product-requirements.md](specs/high-level-product-requirements.md). [specs/prd-phase-1.md](specs/prd-phase-1.md) is a placeholder to be filled in.
+### Where things live (read these before coding)
+
+- [specs/high-level-product-requirements.md](specs/high-level-product-requirements.md) — the authoritative **product vision** across all phases (the pitch, problem, full feature set).
+- [specs/prd-phase-1.md](specs/prd-phase-1.md) — the **Phase 1 PRD** (Foundations). Now a complete spec, not a placeholder: scope, functional requirements (FR-*), technical design, build plan, and acceptance criteria (AC-*). This is the contract for the first build — start here.
+- [specs/references/dtcg-spec-cheat-sheet.md](specs/references/dtcg-spec-cheat-sheet.md) — DTCG `2025.10` (first stable release) format reference: token/group shapes, `$`-properties, aliases, `$ref`, `$extends`. The wire format, not the in-memory model.
+- [specs/references/vs-code-extension-authoring.md](specs/references/vs-code-extension-authoring.md) — VS Code extension research: Custom Text Editor, webview, contribution points, `yo code`, packaging.
+- [design/README.md](design/README.md) — **visual design guidelines** binding on all mockups/UI: the extension must look like a first-party VS Code panel (style against `var(--vscode-*)`, Codicons, density over decoration — no custom brand palette/fonts). [design/phase-1/](design/phase-1/) tracks the mockups Phase 1 needs.
+
+### Phase 1 package layering (per the PRD's technical design)
+
+When scaffolding, structure the code as three layers — this operationalizes the editor-agnostic-core constraint below:
+
+- `core/` — plain TypeScript, **zero `vscode` imports**: DTCG parse, internal model, deterministic serializer/formatter, alias resolution + cycle detection, color value handling. Unit-tested without the Extension Host (AC-11).
+- `extension/` — thin VS Code adapter: `activate()`, Custom Text Editor provider, tree provider, webview host, file/watch I/O, message routing.
+- `webview/` — the GUI (bundled JS/CSS, theme-variable styling; no deprecated Webview UI Toolkit).
 
 ## What this is
 
